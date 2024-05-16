@@ -10,10 +10,13 @@ const MapContainer = ({ google, coordinates, isSimulating }) => {
   const initialDate = useRef(new Date());
   const intervalIdRef = useRef(null);
   const mapRef = useRef(null); // Reference to the map instance
-  const [initialCenter, setInitialCenter] = useState({ lat: 30.67707920758048, lng: 77.209 });
+  const [initialCenter, setInitialCenter] = useState(getCoordinate());
   const [isPlaying, setIsPlaying] = useState(false); // Initially set to false
   const [isPaused, setIsPaused] = useState(false);
 
+  useEffect(() => {
+    setInitialCenter(getCoordinate())
+  }, [coordinates])
   useEffect(() => {
     if (isSimulating && coordinates.length > 0 && google && google.maps.geometry) {
       if (!isPaused) {
@@ -24,6 +27,8 @@ const MapContainer = ({ google, coordinates, isSimulating }) => {
     } else {
       setIsPlaying(false); // Set to false when simulation stops
     }
+
+    setInitialCenter(getCoordinate())
   }, [isSimulating, coordinates, google, isPaused]); // Include coordinates, google, and isPaused as dependencies
 
   useEffect(() => {
@@ -45,6 +50,8 @@ const MapContainer = ({ google, coordinates, isSimulating }) => {
     const distance = getDistance(initialDate.current, velocity); // Calculate distance
     const newPosition = calculatePosition(distance);
 
+
+
     // Check if the newPosition is approximately the same as the last coordinate
     const lastCoordinate = coordinates[coordinates.length - 1];
     if (Math.abs(newPosition.lat - lastCoordinate[0]) < 1e-6 && Math.abs(newPosition.lng - lastCoordinate[1]) < 1e-6) {
@@ -62,6 +69,15 @@ const MapContainer = ({ google, coordinates, isSimulating }) => {
     const differentInTime = (new Date() - initialDate) / 1000;
     return differentInTime * velocity;
   };
+
+  function getCoordinate() {
+    if (coordinates.length <= 0) {
+      return { lat: 30.67707920758048, lng: 77.209 }
+    }
+    else {
+      return (progress.length > 0) ? progress[progress.length - 1] : { lat: coordinates[coordinates.length - 1][0], lng: coordinates[coordinates.length - 1][1] }
+    }
+  }
 
   const calculatePosition = (distance) => {
     if (!google || !google.maps.geometry) {
@@ -124,7 +140,7 @@ const MapContainer = ({ google, coordinates, isSimulating }) => {
         zoom={18}
         initialCenter={{ ...initialCenter }}
         ref={mapRef}
-        center={{ ...initialCenter }}
+        center={initialCenter}
       >
         {/* Custom icon for the last coordinate */}
         {coordinates.length > 0 && progress.length > 0 && (

@@ -32,7 +32,14 @@ const InputForm = ({ onSubmit }) => {
       reader.readAsText(file);
     }
   };
+  const handleTimeChange = (e) => {
+    setTime(e.target.value);
+  };
 
+  const handleTimeBlur = () => {
+    // This will force the input field to lose focus, closing the dropdown
+    document.getElementById('time').blur();
+  };
   const handleFileSubmit = () => {
     if (fileData) {
       const parsedData = fileData.map(({ latitude, longitude, timestamp }) => ({
@@ -45,7 +52,7 @@ const InputForm = ({ onSubmit }) => {
       setSelectedFileName('');
     }
   };
-;
+  ;
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
@@ -83,7 +90,8 @@ const InputForm = ({ onSubmit }) => {
           id="time"
           type="time"
           value={time}
-          onChange={(e) => setTime(e.target.value)}
+          onChange={handleTimeChange}
+          onBlur={handleTimeBlur} // Add onBlur event listener
           className="w-full px-3 py-2 placeholder-gray-300 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
         />
       </div>
