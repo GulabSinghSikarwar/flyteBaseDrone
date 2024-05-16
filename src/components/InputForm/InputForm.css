@@ -1,0 +1,10 @@
+/* src/components/InputForm/InputForm.css */
+.input-form {
+    margin-bottom: 20px;
+  }
+  
+  .input-form label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
